@@ -21,13 +21,13 @@ def gmlToPolygon(gmlStr):
     return Polygon(coords)
 
 
-def downloadFile(url, filepath, user, password):
+def downloadFile(url, filepath, auth=None):
     if not os.path.exists(os.path.dirname(filepath)):
         os.makedirs(os.path.dirname(filepath))
 
     with open(filepath, "wb") as f:
         logger.debug("Downloading %s to %s" % (url, filepath))
-        response = requests.get(url, auth=(user, password), stream=True)
+        response = requests.get(url, auth=auth, stream=True)
         if response.status_code != 200:
             raise Exception("Could not download file. status=%s" % response.status_code)
         total_length = response.headers.get('content-length')

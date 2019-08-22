@@ -27,12 +27,16 @@ logger = logging.getLogger('sentinelloader')
 
 class Sentinel2Loader:
 
-    def __init__(self, dataPath, user, password, apiUrl='https://scihub.copernicus.eu/apihub/', showProgressbars=True, dateToleranceDays=5, cloudCoverage=(0,80), deriveResolutions=True, cacheApiCalls=True, cacheTilesData=True, loglevel=logging.DEBUG, nirBand='B08'):
+    def __init__(self, dataPath, user=None, password=None, apiUrl='https://scihub.copernicus.eu/apihub/',
+                 showProgressbars=True, dateToleranceDays=5, cloudCoverage=(0,80), deriveResolutions=True,
+                 cacheApiCalls=True, cacheTilesData=True, loglevel=logging.DEBUG, nirBand='B08'):
         logging.basicConfig(level=loglevel)
         self.api = SentinelAPI(user, password, apiUrl, show_progressbars=showProgressbars)
         self.dataPath = dataPath
-        self.user = user
-        self.password = password
+        if user and password:
+            self.auth = (user, password)
+        else:
+            self.auth = None
         self.dateToleranceDays=dateToleranceDays
         self.cloudCoverage=cloudCoverage
         self.deriveResolutions=deriveResolutions
@@ -150,7 +154,7 @@ class Sentinel2Loader:
                 os.system("touch -c %s" % meta_cache_file)
             else:
                 logger.debug('Getting metadata info for tile \'%s\' remotelly', sp['uuid'])
-                r = requests.get(url, auth=(self.user, self.password))
+                r = requests.get(url, auth=self.auth)
                 if r.status_code!=200:
                     raise Exception("Could not get metadata info. status=%s" % r.status_code)
                 mcontents = r.content.decode("utf-8")
@@ -186,7 +190,7 @@ class Sentinel2Loader:
                     url = "https://scihub.copernicus.eu/dhus/odata/v1/Products('%s')/Nodes('%s.SAFE')/Nodes('GRANULE')/Nodes('%s')/Nodes('IMG_DATA')/Nodes('%s.jp2')/$value" % (sp['uuid'], sp['title'], m.group(1), m.group(2))
                     
                 logger.info('Downloading tile uuid=\'%s\', resolution=\'%s\', band=\'%s\', date=\'%s\'', sp['uuid'], resolutionDownload, bandName, date1)
-                downloadFile(url, tmp_tile_filejp2, self.user, self.password)
+                downloadFile(url, tmp_tile_filejp2, self.auth)
                 #remove near black features on image border due to compression artifacts. if not removed, some black pixels 
                 #will be present on final image, specially when there is an inclined crop in source images
                 if bandName=='TCI':
