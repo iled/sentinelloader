@@ -48,9 +48,8 @@ def downloadFile(url, filepath, user, password):
 def saveFile(filename, contents):
     if not os.path.exists(os.path.dirname(filename)):
         os.makedirs(os.path.dirname(filename))
-    with open(filename, 'w') as fw:
-        fw.write(contents)
-        fw.flush()
+    with open(filename, 'wb') as fw:
+        fw.write(contents.encode('utf-8'))
 
 
 def loadFile(filename):
