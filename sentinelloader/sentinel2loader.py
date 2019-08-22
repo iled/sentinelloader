@@ -96,15 +96,16 @@ class Sentinel2Loader:
                 logger.debug("Using cached API query contents")
                 products_df = pd.read_csv(apicache_file)
                 os.system("touch -c %s" % apicache_file)
-            else:
-                logger.debug("Querying remote API")
-                productType = 'S2MSI%s' % productLevel
-                products = self.api.query(area, 
-                                               date=(dateFrom.strftime("%Y%m%d"), dateTo.strftime("%Y%m%d")),
-                                               platformname='Sentinel-2', producttype=productType, cloudcoverpercentage=self.cloudCoverage)
-                products_df = self.api.to_dataframe(products)
-                logger.debug("Caching API query results for later usage")
-                saveFile(apicache_file, products_df.to_csv(index=True))
+        else:
+            logger.debug("Querying remote API")
+            productType = 'S2MSI%s' % productLevel
+            products = self.api.query(area,
+                                      date=(dateFrom.strftime("%Y%m%d"), dateTo.strftime("%Y%m%d")),
+                                      platformname='Sentinel-2', producttype=productType,
+                                      cloudcoverpercentage=self.cloudCoverage)
+            products_df = self.api.to_dataframe(products)
+            logger.debug("Caching API query results for later usage")
+            saveFile(apicache_file, products_df.to_csv(index=True))
 
         logger.debug("Found %d products", len(products_df))
 
