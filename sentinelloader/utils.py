@@ -53,7 +53,7 @@ def saveFile(filename, contents):
 
 
 def loadFile(filename):
-    with open(filename, 'r') as fr:
+    with open(filename, 'r', encoding='utf-8') as fr:
         return fr.read()
 
 
