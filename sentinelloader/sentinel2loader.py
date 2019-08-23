@@ -95,11 +95,10 @@ class Sentinel2Loader:
         area_hash = hashlib.md5(area.encode()).hexdigest()
         apicache_file = self.dataPath + "/apiquery/Sentinel-2-S2MSI%s-%s-%s-%s-%s-%s.csv" % (productLevel, area_hash, dateFrom.strftime("%Y%m%d"), dateTo.strftime("%Y%m%d"), self.cloudCoverage[0], self.cloudCoverage[1])
         products_df = None
-        if self.cacheApiCalls:
-            if os.path.isfile(apicache_file):
-                logger.debug("Using cached API query contents")
-                products_df = pd.read_csv(apicache_file)
-                os.system("touch -c %s" % apicache_file)
+        if self.cacheApiCalls and os.path.isfile(apicache_file):
+            logger.debug("Using cached API query contents")
+            products_df = pd.read_csv(apicache_file)
+            os.system("touch -c %s" % apicache_file)
         else:
             logger.debug("Querying remote API")
             productType = 'S2MSI%s' % productLevel
