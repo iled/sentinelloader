@@ -29,7 +29,7 @@ class Sentinel2Loader:
 
     def __init__(self, dataPath, user=None, password=None, apiUrl='https://scihub.copernicus.eu/apihub/',
                  showProgressbars=True, dateToleranceDays=5, cloudCoverage=(0,80), deriveResolutions=True,
-                 cacheApiCalls=True, cacheTilesData=True, loglevel=logging.DEBUG, nirBand='B08'):
+                 resampling=True, cacheApiCalls=True, cacheTilesData=True, loglevel=logging.DEBUG, nirBand='B08'):
         logging.basicConfig(level=loglevel)
         self.api = SentinelAPI(user, password, apiUrl, show_progressbars=showProgressbars)
         self.dataPath = dataPath
@@ -37,12 +37,13 @@ class Sentinel2Loader:
             self.auth = (user, password)
         else:
             self.auth = None
-        self.dateToleranceDays=dateToleranceDays
-        self.cloudCoverage=cloudCoverage
-        self.deriveResolutions=deriveResolutions
-        self.cacheApiCalls=cacheApiCalls
-        self.cacheTilesData=cacheTilesData
-        self.nirBand=nirBand
+        self.dateToleranceDays = dateToleranceDays
+        self.cloudCoverage = cloudCoverage
+        self.deriveResolutions = deriveResolutions
+        self.resampling = resampling
+        self.cacheApiCalls = cacheApiCalls
+        self.cacheTilesData = cacheTilesData
+        self.nirBand = nirBand
 
     
     def getProductBandTiles(self, geoPolygon, bandName, resolution, dateReference):
@@ -207,7 +208,7 @@ class Sentinel2Loader:
             os.system("touch -c %s" % downloadFilename)
 
             filename = downloadFilename
-            if resolution!=resolutionDownload:
+            if self.resampling and resolution != resolutionDownload:
                 filename = self.dataPath + "/products/%s/%s/%s-%s.tiff" % (m1.group(1), sp['uuid'], m.group(2), resolution)
                 logger.debug("Resampling band %s originally in resolution %s to %s" % (bandName, resolutionDownload, resolution))
                 rexp = "([0-9]+).*"
