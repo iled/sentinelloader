@@ -9,8 +9,9 @@ setup(
     author_email= 'flaviostutz@gmail.com',
     description='Sentinel satellite data downloader with steroids',
     packages=find_packages(),
-    install_requires=['uuid >= 1.3.0', 'gdal >= 2.2.2',
+    install_requires=['gdal >= 2.2.2',
                       'requests >= 2.21.0', 'pandas >= 0.24.1', 
-                      'geopandas >= 0.4.1', 'shapely >= 1.6.4', 
+                      'geopandas >= 0.4.1', 'shapely >= 1.6.4',
+                      'pillow >= 5.4.1',
                       'sentinelsat >= 0.12.2'],
 )
